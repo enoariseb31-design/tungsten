@@ -158,6 +158,45 @@
             box-shadow: 0 6px 16px rgba(34, 197, 94, 0.25);
         }
 
+        /* ---------------- RESPONSE AREA ---------------- */
+        .response-area {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 14px;
+            border-left: 5px solid var(--green);
+            text-align: left;
+            animation: fadeUp 0.4s ease-out;
+            display: none;
+        }
+
+        .response-area.loading {
+            background: #fefce8;
+            border-left-color: #f59e0b;
+        }
+
+        .response-area.error {
+            background: #fef2f2;
+            border-left-color: #dc2626;
+        }
+
+        .response-area.success {
+            background: #f0fdf4;
+            border-left-color: var(--green);
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e5e7eb;
+            border-top: 3px solid var(--green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+
         /* ---------------- FOOTER ---------------- */
 
         footer {
@@ -181,9 +220,13 @@
                 transform: translateY(0);
             }
         }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-
 <body>
 
     <div class="top-bar">
@@ -199,9 +242,14 @@
             </div>
 
             <div class="search-box">
-                <input placeholder="Ask anything…" />
-                <button class="ask-btn">Ask</button>
+                <!-- ADDED ID here -->
+                <input id="userInput" placeholder="Ask anything…" />
+                <!-- ADDED onclick here -->
+                <button class="ask-btn" onclick="askQuestion()" id="askButton">Ask</button>
             </div>
+
+            <!-- ADDED Response area -->
+            <div id="responseArea" class="response-area"></div>
         </div>
     </main>
 
@@ -209,5 +257,121 @@
         © 2025 Tungsten
     </footer>
 
+    <!-- SCRIPT MOVED TO BOTTOM - RIGHT BEFORE </body> -->
+    <script>
+        // 1. Simple function to talk to backend
+        async function askBackend(question) {
+            console.log("📤 Sending to backend:", question);
+            
+            const response = await fetch('http://localhost:8080/api/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            });
+            
+            const data = await response.json();
+            console.log("📥 Backend replied:", data.answer);
+            return data.answer;
+        }
+
+        // 2. Main function when user clicks "Ask"
+        async function askQuestion() {
+            const userInput = document.getElementById('userInput');
+            const responseArea = document.getElementById('responseArea');
+            const askButton = document.getElementById('askButton');
+            
+            const question = userInput.value.trim();
+            
+            if (!question) {
+                alert("Please type something!");
+                userInput.focus();
+                return;
+            }
+            
+            // Disable button and show loading
+            askButton.disabled = true;
+            askButton.textContent = "Asking...";
+            
+            // Show loading in response area
+            responseArea.style.display = 'block';
+            responseArea.className = 'response-area loading';
+            responseArea.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <div class="loading-spinner"></div>
+                    <span>Thinking about your question...</span>
+                </div>
+            `;
+            
+            try {
+                // Send to backend
+                const reply = await askBackend(question);
+                
+                // Show success
+                responseArea.className = 'response-area success';
+                responseArea.innerHTML = `
+                    <div style="margin-bottom: 8px; color: #15803d; font-weight: 600;">
+                        ✅ Tungsten Answer
+                    </div>
+                    <div style="color: #0f172a; line-height: 1.5;">
+                        ${reply}
+                    </div>
+                `;
+                
+                // Clear input
+                userInput.value = '';
+                
+            } catch (error) {
+                // Show error
+                responseArea.className = 'response-area error';
+                responseArea.innerHTML = `
+                    <div style="margin-bottom: 8px; color: #dc2626; font-weight: 600;">
+                        ❌ Connection Failed
+                    </div>
+                    <div style="color: #7f1d1d;">
+                        ${error.message}<br><br>
+                        <small>Make sure backend is running at http://localhost:8080</small>
+                    </div>
+                `;
+                console.error("Backend error:", error);
+                
+            } finally {
+                // Re-enable button
+                askButton.disabled = false;
+                askButton.textContent = "Ask";
+            }
+        }
+
+        // 3. Auto-test backend on page load
+        window.addEventListener('load', async () => {
+            console.log("🔍 Testing backend connection...");
+            try {
+                const testReply = await askBackend("Connection test");
+                console.log("✅ Backend is working:", testReply);
+                
+                // Optional: Show subtle success indicator
+                const brand = document.querySelector('.brand');
+                if (brand) {
+                    brand.style.position = 'relative';
+                    brand.innerHTML = 'Tungsten <span style="font-size: 0.5em; color: #22c55e; margin-left: 5px;">●</span>';
+                }
+                
+            } catch (error) {
+                console.warn("⚠️ Backend not connected:", error.message);
+            }
+        });
+
+        // 4. Allow Enter key to submit
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+
+        // 5. Auto-focus input on page load
+        window.addEventListener('load', () => {
+            document.getElementById('userInput').focus();
+        });
+    </script>
 </body>
 </html>
+
