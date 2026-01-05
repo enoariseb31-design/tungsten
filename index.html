@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tungsten</title>
+    <title>TungstenAI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Mobile support (safe, not trademarked UI) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <style>
         :root {
@@ -12,366 +16,219 @@
             --text-dark: #0f172a;
             --text-light: #475569;
             --bg: #ffffff;
+            --sidebar-bg: #f8fafc;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont,
-                         "SF Pro Text", "SF Pro Display",
-                         system-ui, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
-            height: 100vh;
         }
 
-        /* ---------------- TOP BAR ---------------- */
-
+        /* Top bar */
         .top-bar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            padding: 16px 24px;
+            right: 0;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10;
+            background: var(--bg);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            z-index: 20;
+            font-weight: 700;
+            color: var(--green);
         }
 
-        .signup-btn {
+        .signin-btn {
             position: absolute;
-            left: 24px;
-            background: var(--green);
-            color: white;
+            left: 12px;
+            padding: 6px 12px;
+            border-radius: 10px;
             border: none;
-            padding: 10px 18px;
-            border-radius: 999px;
-            font-size: 0.95rem;
+            background: var(--green-soft);
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            animation: fadeUp 0.8s ease-out both;
-            animation-delay: 0.15s;
         }
 
-        .signup-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 28px rgba(34, 197, 94, 0.3);
+        /* Layout */
+        .app {
+            display: flex;
+            padding-top: 56px;
+            min-height: 100vh;
         }
 
-        .brand {
-            font-size: 2.4rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: var(--green);
-            animation: fadeUp 0.8s ease-out both;
-            animation-delay: 0.1s;
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid #e5e7eb;
+            padding: 16px;
+            overflow-y: auto;
         }
 
-        /* ---------------- MAIN CONTENT ---------------- */
+        .sidebar h3 {
+            margin-top: 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
 
-        .page {
-            height: 100%;
+        .history-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            background: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Main */
+        main {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-top: 80px;
+            padding: 24px;
         }
 
         .content {
+            max-width: 520px;
             width: 100%;
-            max-width: 640px;
-            padding: 0 24px;
             text-align: center;
-            animation: fadeUp 0.8s ease-out both;
-            animation-delay: 0.25s;
         }
 
         h1 {
-            font-size: 3rem;
-            margin-bottom: 12px;
-            letter-spacing: -0.03em;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
 
         .subtitle {
             color: var(--text-light);
-            font-size: 1.1rem;
-            margin-bottom: 36px;
+            margin-bottom: 30px;
         }
 
         .search-box {
-            background: white;
-            border-radius: 18px;
-            padding: 10px;
             display: flex;
-            gap: 10px;
-            box-shadow:
-                0 20px 40px rgba(0, 0, 0, 0.06),
-                0 4px 10px rgba(0, 0, 0, 0.04);
-            transition: box-shadow 0.2s ease;
-        }
-
-        .search-box:focus-within {
-            box-shadow:
-                0 24px 50px rgba(0, 0, 0, 0.08),
-                0 6px 14px rgba(0, 0, 0, 0.06);
+            gap: 8px;
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         input {
             flex: 1;
             border: none;
             outline: none;
-            font-size: 1.05rem;
-            padding: 14px 16px;
-            font-family: inherit;
-            transition: transparent;
+            font-size: 1rem;
+            padding: 12px;
         }
 
-        input:focus {
-            outline: none;
-            box-shadow: none;
-        }
-
-        .ask-btn {
+        button {
             background: var(--green-soft);
             border: none;
-            color: #15803d;
-            padding: 0 22px;
-            border-radius: 14px;
-            font-size: 1rem;
+            padding: 0 20px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition:
-                background 0.15s ease,
-                transform 0.12s ease,
-                box-shadow 0.12s ease;
         }
 
-        .ask-btn:hover {
-            background: #bbf7d0;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(34, 197, 94, 0.25);
-        }
-
-        /* ---------------- RESPONSE AREA ---------------- */
         .response-area {
-            margin-top: 24px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 14px;
-            border-left: 5px solid var(--green);
-            text-align: left;
-            animation: fadeUp 0.4s ease-out;
             display: none;
-        }
-
-        .response-area.loading {
-            background: #fefce8;
-            border-left-color: #f59e0b;
-        }
-
-        .response-area.error {
-            background: #fef2f2;
-            border-left-color: #dc2626;
-        }
-
-        .response-area.success {
+            margin-top: 20px;
+            padding: 16px;
+            border-left: 4px solid var(--green);
             background: #f0fdf4;
-            border-left-color: var(--green);
+            border-radius: 12px;
+            text-align: left;
         }
-
-        .loading-spinner {
-            width: 24px;
-            height: 24px;
-            border: 3px solid #e5e7eb;
-            border-top: 3px solid var(--green);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-right: 12px;
-            vertical-align: middle;
-        }
-
-        /* ---------------- FOOTER ---------------- */
 
         footer {
-            position: fixed;
-            bottom: 20px;
-            width: 100%;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #94a3b8;
+            padding: 12px;
         }
 
-        /* ---------------- ANIMATIONS ---------------- */
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* Mobile */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .content h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <button class="signup-btn">Sign up</button>
-        <div class="brand">Tungsten</div>
-    </div>
+<div class="top-bar">
+    <button class="signin-btn">Sign in</button>
+    TungstenAI
+</div>
 
-    <main class="page">
+<div class="app">
+    <aside class="sidebar">
+        <h3>History</h3>
+        <div class="history-item">What is quantum computing?</div>
+        <div class="history-item">Explain black holes</div>
+    </aside>
+
+    <main>
         <div class="content">
             <h1>Search with confidence</h1>
-            <div class="subtitle">
-                Clear answers. Thoughtfully delivered.
-            </div>
+            <div class="subtitle">Clear answers. Thoughtfully delivered.</div>
 
             <div class="search-box">
-                <!-- ADDED ID here -->
-                <input id="userInput" placeholder="Ask anything…" />
-                <!-- ADDED onclick here -->
-                <button class="ask-btn" onclick="askQuestion()" id="askButton">Ask</button>
+                <input id="userInput" placeholder="Ask anything…" autocomplete="off">
+                <button id="askButton" onclick="askQuestion()">Ask</button>
             </div>
 
-            <!-- ADDED Response area -->
             <div id="responseArea" class="response-area"></div>
         </div>
     </main>
+</div>
 
-    <footer>
-        © 2025 Tungsten
-    </footer>
+<footer>© 2025 TungstenAI</footer>
 
-    <!-- SCRIPT MOVED TO BOTTOM - RIGHT BEFORE </body> -->
-    <script>
-        // 1. Simple function to talk to backend
-        async function askBackend(question) {
-            console.log("📤 Sending to backend:", question);
-            
-            const response = await fetch('http://localhost:8080/api/ask', {
+<script>
+    const API_URL = '/api/ask';
+
+    function escapeHTML(text) {
+        if (!text) return '';
+        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    async function askQuestion() {
+        const input = document.getElementById('userInput');
+        const area = document.getElementById('responseArea');
+        const button = document.getElementById('askButton');
+        const question = input.value.trim();
+        if (!question) return;
+
+        button.disabled = true;
+        area.style.display = 'block';
+        area.textContent = 'Thinking…';
+
+        try {
+            const res = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question })
+                body: JSON.stringify({ message: question })
             });
-            
-            const data = await response.json();
-            console.log("📥 Backend replied:", data.answer);
-            return data.answer;
+            const data = await res.json();
+            area.textContent = escapeHTML(data.reply || data.answer || 'No response');
+        } catch (e) {
+            area.textContent = 'Error contacting server';
+        } finally {
+            button.disabled = false;
         }
+    }
+</script>
 
-        // 2. Main function when user clicks "Ask"
-        async function askQuestion() {
-            const userInput = document.getElementById('userInput');
-            const responseArea = document.getElementById('responseArea');
-            const askButton = document.getElementById('askButton');
-            
-            const question = userInput.value.trim();
-            
-            if (!question) {
-                alert("Please type something!");
-                userInput.focus();
-                return;
-            }
-            
-            // Disable button and show loading
-            askButton.disabled = true;
-            askButton.textContent = "Asking...";
-            
-            // Show loading in response area
-            responseArea.style.display = 'block';
-            responseArea.className = 'response-area loading';
-            responseArea.innerHTML = `
-                <div style="display: flex; align-items: center;">
-                    <div class="loading-spinner"></div>
-                    <span>Thinking about your question...</span>
-                </div>
-            `;
-            
-            try {
-                // Send to backend
-                const reply = await askBackend(question);
-                
-                // Show success
-                responseArea.className = 'response-area success';
-                responseArea.innerHTML = `
-                    <div style="margin-bottom: 8px; color: #15803d; font-weight: 600;">
-                        ✅ Tungsten Answer
-                    </div>
-                    <div style="color: #0f172a; line-height: 1.5;">
-                        ${reply}
-                    </div>
-                `;
-                
-                // Clear input
-                userInput.value = '';
-                
-            } catch (error) {
-                // Show error
-                responseArea.className = 'response-area error';
-                responseArea.innerHTML = `
-                    <div style="margin-bottom: 8px; color: #dc2626; font-weight: 600;">
-                        ❌ Connection Failed
-                    </div>
-                    <div style="color: #7f1d1d;">
-                        ${error.message}<br><br>
-                        <small>Make sure backend is running at http://localhost:8080</small>
-                    </div>
-                `;
-                console.error("Backend error:", error);
-                
-            } finally {
-                // Re-enable button
-                askButton.disabled = false;
-                askButton.textContent = "Ask";
-            }
-        }
-
-        // 3. Auto-test backend on page load
-        window.addEventListener('load', async () => {
-            console.log("🔍 Testing backend connection...");
-            try {
-                const testReply = await askBackend("Connection test");
-                console.log("✅ Backend is working:", testReply);
-                
-                // Optional: Show subtle success indicator
-                const brand = document.querySelector('.brand');
-                if (brand) {
-                    brand.style.position = 'relative';
-                    brand.innerHTML = 'Tungsten <span style="font-size: 0.5em; color: #22c55e; margin-left: 5px;">●</span>';
-                }
-                
-            } catch (error) {
-                console.warn("⚠️ Backend not connected:", error.message);
-            }
-        });
-
-        // 4. Allow Enter key to submit
-        document.getElementById('userInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                askQuestion();
-            }
-        });
-
-        // 5. Auto-focus input on page load
-        window.addEventListener('load', () => {
-            document.getElementById('userInput').focus();
-        });
-    </script>
 </body>
 </html>
-
