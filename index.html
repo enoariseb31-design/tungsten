@@ -1,235 +1,532 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>TungstenAI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="en" data-theme="light">
+  <style>
+    /* OVERRIDE: Force show chat when needed */
+    #chatbot-wrapper.show-chat {
+      display: block !important;
+      visibility: visible !important;
+    }
 
-    <!-- Mobile support (safe, not trademarked UI) -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+    /* Force hide landing */
+    .landing-container.hide-landing {
+      display: none !important;
+    }
+  </style>
 
-    <style>
-        :root {
-            --green: #22c55e;
-            --green-soft: #dcfce7;
-            --text-dark: #0f172a;
-            --text-light: #475569;
-            --bg: #ffffff;
-            --sidebar-bg: #f8fafc;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tungs AI - AI Assistant</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="text/JavaScript" src="darkmode.js" defer></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
 
-        * { box-sizing: border-box; }
+  <body>
+    <!-- Main Container -->
+    <div class="landing-container">
+      <!-- Header -->
+      <header class="landing-header">
+        <button id="theme-switch">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="logo">
+          <i class="fas fa-robot"></i>
+          <h1>Tungs AI</h1>
+        </div>
+        <nav>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <button class="btn-login" id="open-login">Login</button>
+        </nav>
+      </header>
 
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text-dark);
-        }
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          <h2>
+            Your AI Assistant. <span class="highlight">Free to Start.</span>
+          </h2>
+          <p>
+            Get instant help with questions, tasks, and information. Start with
+            our free plan, upgrade anytime.
+          </p>
 
-        /* Top bar */
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            z-index: 20;
-            font-weight: 700;
-            color: var(--green);
-        }
+          <!-- Auth Modal Toggle -->
+          <div class="cta-buttons">
+            <button class="btn-primary btn-large" id="start-free">
+              <i class="fas fa-rocket"></i> Start Free
+            </button>
+          </div>
 
-        .signin-btn {
-            position: absolute;
-            left: 12px;
-            padding: 6px 12px;
-            border-radius: 10px;
-            border: none;
-            background: var(--green-soft);
-            font-weight: 600;
-            cursor: pointer;
-        }
+          <!-- Quick Stats -->
+          <div class="quick-stats">
+            <div class="stat">
+              <span class="stat-number">50+</span>
+              <span class="stat-label">Free Tokens/Month</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">24/7</span>
+              <span class="stat-label">Available</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Safe & Professional</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-image">
+          <!-- Placeholder for chatbot preview -->
+          <div class="chat-preview">
+            <div class="chat-bubble bot">Hello. How can I help you today?</div>
+            <div class="chat-bubble user">Can you help me with homework?</div>
+            <div class="chat-bubble bot">
+              I can provide guidance. For detailed solutions, upgrade to paid
+              plans.
+            </div>
+          </div>
+        </div>
+      </section>
 
-        /* Layout */
-        .app {
-            display: flex;
-            padding-top: 56px;
-            min-height: 100vh;
-        }
+      <!-- Features -->
+      <section class="features" id="features">
+        <h3>Why Choose Tungs AI?</h3>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <i class="fas fa-shield-alt"></i>
+            <h4>Safety First</h4>
+            <p>
+              Professional boundaries maintained. No personal relationships or
+              therapy.
+            </p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-bolt"></i>
+            <h4>Fast Responses</h4>
+            <p>Get instant answers to your questions 24/7.</p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-mobile-alt"></i>
+            <h4>Multi-Device</h4>
+            <p>
+              Access from any device. Free plan: 1 device. Paid: Multiple
+              devices.
+            </p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-chart-line"></i>
+            <h4>Usage Tracking</h4>
+            <p>Monitor your token usage and upgrade when needed.</p>
+          </div>
+        </div>
+      </section>
 
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background: var(--sidebar-bg);
-            border-right: 1px solid #e5e7eb;
-            padding: 16px;
-            overflow-y: auto;
-        }
+      <!-- Pricing -->
+      <section class="pricing" id="pricing">
+        <h3>Simple, Transparent Pricing</h3>
+        <div class="pricing-grid">
+          <!-- FREE PLAN -->
+          <div class="pricing-card free">
+            <div class="plan-header">
+              <h4>Free</h4>
+              <div class="price">$0<span>/month</span></div>
+            </div>
+            <ul class="plan-features">
+              <li><i class="fas fa-check"></i> Basic chatbot access</li>
+              <li><i class="fas fa-check"></i> 50 tokens per month</li>
+              <li><i class="fas fa-check"></i> Helpful tips & guidance</li>
+              <li><i class="fas fa-times"></i> No content generation</li>
+              <li><i class="fas fa-check"></i> Upgrade anytime</li>
+            </ul>
+            <button class="btn-plan" data-plan="free" id="select-free">
+              Get Started Free
+            </button>
+          </div>
 
-        .sidebar h3 {
-            margin-top: 0;
-            font-size: 0.9rem;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+          <!-- STANDARD PLAN -->
+          <div class="pricing-card standard">
+            <div class="plan-header">
+              <h4>Standard</h4>
+              <div class="price">$12.89<span>/month</span></div>
+            </div>
+            <ul class="plan-features">
+              <li><i class="fas fa-check"></i> Full responses</li>
+              <li><i class="fas fa-check"></i> 3 devices</li>
+              <li><i class="fas fa-check"></i> Content generation</li>
+              <li><i class="fas fa-check"></i> Priority support</li>
+              <li><i class="fas fa-check"></i> 500 tokens/month</li>
+            </ul>
+            <button class="btn-plan" data-plan="standard" id="select-standard">
+              Upgrade to Standard
+            </button>
+          </div>
 
-        .history-item {
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 10px;
-            background: white;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
+          <!-- PREMIUM PLAN -->
+          <div class="pricing-card premium">
+            <div class="plan-header">
+              <h4>Premium</h4>
+              <div class="price">$26<span>/month</span></div>
+            </div>
+            <ul class="plan-features">
+              <li><i class="fas fa-check"></i> Unlimited responses</li>
+              <li><i class="fas fa-check"></i> Unlimited devices</li>
+              <li><i class="fas fa-check"></i> All features</li>
+              <li><i class="fas fa-check"></i> 24/7 priority support</li>
+              <li><i class="fas fa-check"></i> 5000 tokens/month</li>
+            </ul>
+            <button class="btn-plan" data-plan="premium" id="select-premium">
+              Upgrade to Premium
+            </button>
+          </div>
+        </div>
+      </section>
 
-        /* Main */
-        main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
+      <!-- Footer -->
+      <footer class="landing-footer">
+        <p>
+          © 2024 Tungs AI. All rights reserved. |
+          <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+        </p>
+        <p class="disclaimer">
+          Tungs AI maintains professional boundaries. Not a substitute for human
+          professionals.
+        </p>
+      </footer>
+    </div>
 
-        .content {
-            max-width: 520px;
-            width: 100%;
-            text-align: center;
-        }
+    <!-- ============ AUTH MODAL ============ -->
+    <div id="auth-modal" class="auth-modal hidden">
+      <div class="auth-content">
+        <button class="auth-close" id="close-auth">&times;</button>
 
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Login</button>
+          <button class="auth-tab" data-tab="register">Register</button>
+        </div>
 
-        .subtitle {
-            color: var(--text-light);
-            margin-bottom: 30px;
-        }
+        <!-- LOGIN FORM -->
+        <form id="login-form" class="auth-form active">
+          <h3>Welcome Back</h3>
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input
+              type="email"
+              id="login-email"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+        </form>
 
-        .search-box {
-            display: flex;
-            gap: 8px;
-            padding: 8px;
-            border-radius: 16px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
+        <!-- REGISTER FORM -->
+        <form id="register-form" class="auth-form">
+          <h3>Join Tungs AI</h3>
+          <div class="form-group">
+            <label for="register-email">Email</label>
+            <input
+              type="email"
+              id="register-email"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password (min 8 chars)</label>
+            <input
+              type="password"
+              id="register-password"
+              placeholder="••••••••"
+              minlength="8"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">Confirm Password</label>
+            <input
+              type="password"
+              id="confirm-password"
+              placeholder="••••••••"
+              minlength="8"
+              required
+            />
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="terms" required />
+            <label for="terms">I agree to the Terms of Service</label>
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <i class="fas fa-user-plus"></i> Create Free Account
+          </button>
+        </form>
 
-        input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 1rem;
-            padding: 12px;
-        }
+        <!-- SINGLE GOOGLE BUTTON (SHARED FOR BOTH FORMS) -->
+        <div class="auth-google-section">
+          <div class="auth-divider">
+            <span>or continue with Google</span>
+          </div>
+          <button
+            type="button"
+            id="google-auth-btn"
+            class="btn-google btn-full"
+          >
+            <svg
+              width="18"
+              height="18"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 48 48"
+            >
+              <path
+                fill="#EA4335"
+                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+              ></path>
+              <path
+                fill="#4285F4"
+                d="M46.44 24.6c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+              ></path>
+              <path
+                fill="#FBBC05"
+                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+              ></path>
+              <path
+                fill="#34A853"
+                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+              ></path>
+            </svg>
+            Sign in with Google
+          </button>
+        </div>
 
-        button {
-            background: var(--green-soft);
-            border: none;
-            padding: 0 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        <p class="auth-note">Free accounts get 50 tokens/month</p>
+      </div>
+    </div>
 
-        .response-area {
-            display: none;
-            margin-top: 20px;
-            padding: 16px;
-            border-left: 4px solid var(--green);
-            background: #f0fdf4;
-            border-radius: 12px;
-            text-align: left;
-        }
+    <!-- ============ SETTINGS MODAL ============ -->
+    <div id="settings-modal" class="settings-modal hidden">
+      <div class="settings-content">
+        <div class="settings-header">
+          <h2><i class="fas fa-cog"></i> Settings</h2>
+          <button class="close-settings">&times;</button>
+        </div>
 
-        footer {
-            text-align: center;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            padding: 12px;
-        }
+        <div class="settings-body">
+          <!-- Theme Settings -->
+          <div class="settings-section">
+            <h3>Appearance</h3>
+            <div class="settings-option theme-toggle">
+              <div class="option-label">
+                <i class="fas fa-moon"></i> Dark Mode
+              </div>
+              <div class="toggle-switch" id="theme-toggle">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
 
-        /* Mobile */
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .content h1 { font-size: 1.8rem; }
-        }
-    </style>
-</head>
-<body>
+          <!-- Account Settings -->
+          <div class="settings-section">
+            <h3>Account</h3>
+            <div class="account-section">
+              <div class="account-option" id="account-upgrade">
+                <div class="option-icon">
+                  <i class="fas fa-crown"></i>
+                </div>
+                <div class="option-text">
+                  <h4>Upgrade Plan</h4>
+                  <p>Get more tokens and features</p>
+                </div>
+                <div class="option-arrow">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
 
-<div class="top-bar">
-    <button class="signin-btn">Sign in</button>
-    TungstenAI
-</div>
+              <div class="account-option" id="account-tokens">
+                <div class="option-icon">
+                  <i class="fas fa-coins"></i>
+                </div>
+                <div class="option-text">
+                  <h4>Token Usage</h4>
+                  <p>50/50 tokens used (Free Plan)</p>
+                </div>
+              </div>
 
-<div class="app">
-    <aside class="sidebar">
-        <h3>History</h3>
-        <div class="history-item">What is quantum computing?</div>
-        <div class="history-item">Explain black holes</div>
-    </aside>
+              <div class="account-option" id="account-profile">
+                <div class="option-icon">
+                  <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="option-text">
+                  <h4>Profile Settings</h4>
+                  <p>Change email, password, etc.</p>
+                </div>
+                <div class="option-arrow">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <main>
-        <div class="content">
-            <h1>Search with confidence</h1>
-            <div class="subtitle">Clear answers. Thoughtfully delivered.</div>
+          <!-- About -->
+          <div class="settings-section">
+            <h3>About Tungs AI</h3>
+            <p style="color: var(--text-secondary); font-size: 14px">
+              Version 1.0.0<br />
+              Professional AI assistant<br />
+              <br />
+              <small>© 2024 Tungs AI. All rights reserved.</small>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            <div class="search-box">
-                <input id="userInput" placeholder="Ask anything…" autocomplete="off">
-                <button id="askButton" onclick="askQuestion()">Ask</button>
+    <!-- ============ CHATBOT INTERFACE (Shown after login) ============ -->
+    <div id="chatbot-wrapper" class="hidden">
+      <div id="chatbot-container">
+        <!-- Header -->
+        <header id="chatbot-header">
+          <div class="header-left">
+            <button class="sidebar-toggle" id="toggle-sidebar">
+              <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+              <i class="fas fa-robot"></i>
+              <h2>Tungs AI</h2>
+            </div>
+          </div>
+          <div class="header-right">
+            <div class="user-info">
+              <i class="fas fa-user"></i>
+              <span id="user-email">user@example.com</span>
+            </div>
+            <button class="icon-btn" id="open-settings" title="Settings">
+              <i class="fas fa-cog"></i>
+            </button>
+            <button class="icon-btn" id="logout-btn" title="Logout">
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <div id="chatbot-main">
+          <!-- Sidebar with User Account & History -->
+          <div id="chat-history-sidebar" class="sidebar">
+            <div class="sidebar-header">
+              <div class="sidebar-user">
+                <div class="user-avatar">
+                  <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-details">
+                  <h4 id="sidebar-user-email">user@example.com</h4>
+                  <div class="user-plan">
+                    <span class="plan-badge free">Free Plan</span>
+                    <span class="token-count" id="token-count"
+                      >0/50 tokens</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <button class="close-sidebar" id="close-sidebar">
+                <i class="fas fa-times"></i>
+              </button>
             </div>
 
-            <div id="responseArea" class="response-area"></div>
+            <div class="sidebar-section">
+              <h3>Chat History</h3>
+              <div id="history-list" class="history-list">
+                <!-- History items will be added here -->
+              </div>
+            </div>
+
+            <div class="sidebar-footer">
+              <button class="btn-upgrade">
+                <i class="fas fa-crown"></i> Upgrade to Premium
+              </button>
+            </div>
+          </div>
+
+          <!-- Chat Area -->
+          <div id="chatbot-content">
+            <div id="chatbot-body">
+              <div id="chatbot-messages">
+                <!-- Welcome message -->
+                <div class="message bot">
+                  <div class="message-text">
+                    Hello. I'm Tungs AI, your professional assistant. How can I
+                    help you today?
+                  </div>
+                  <div class="message-time">Just now</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="chatbot-input-container">
+              <div class="input-wrapper">
+                <textarea
+                  id="chatbot-input"
+                  placeholder="Type your message here... (Shift+Enter for new line)"
+                  rows="1"
+                ></textarea>
+                <button id="send-btn">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+              <div class="input-footer">
+                <span class="token-info">
+                  <i class="fas fa-coins"></i>
+                  <span id="current-tokens">50</span> tokens remaining
+                </span>
+                <span class="input-hint">Press Enter to send</span>
+              </div>
+            </div>
+          </div>
         </div>
-    </main>
-</div>
+      </div>
+    </div>
 
-<footer>© 2025 TungstenAI</footer>
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script type="module" src="auth.js"></script>
 
-<script>
-    const API_URL = '/api/ask';
-
-    function escapeHTML(text) {
-        if (!text) return '';
-        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    async function askQuestion() {
-        const input = document.getElementById('userInput');
-        const area = document.getElementById('responseArea');
-        const button = document.getElementById('askButton');
-        const question = input.value.trim();
-        if (!question) return;
-
-        button.disabled = true;
-        area.style.display = 'block';
-        area.textContent = 'Thinking…';
-
-        try {
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: question })
-            });
-            const data = await res.json();
-            area.textContent = escapeHTML(data.reply || data.answer || 'No response');
-        } catch (e) {
-            area.textContent = 'Error contacting server';
-        } finally {
-            button.disabled = false;
+    <!-- Add notification styles if not already in CSS -->
+    <style>
+      /* Add this if not in your CSS file */
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
         }
-    }
-</script>
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
 
-</body>
+      @keyframes slideOutRight {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+    </style>
+  </body>
 </html>
-

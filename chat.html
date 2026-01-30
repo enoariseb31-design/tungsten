@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ChatFlow - Professional AI Chat Assistant with secure, multi-device support"
+    />
+    <meta
+      name="keywords"
+      content="AI chat, assistant, chatbot, ChatFlow, productivity"
+    />
+    <meta name="author" content="ChatFlow" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="ChatFlow - AI Chat Assistant" />
+    <meta
+      property="og:description"
+      content="Professional AI assistant with enterprise-grade security"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Favicon (Base64 embedded to avoid external requests) -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>"
+    />
+
+    <title>ChatFlow - Secure AI Chat Assistant</title>
+
+    <!-- Inline critical CSS to avoid FOUC -->
+    <style>
+      /* Critical: Hide content until JS loads properly */
+      .js-loading #chatbot-container,
+      .js-loading #user-profile-btn,
+      .js-loading #theme-toggle {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .js-loading::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      }
+
+      .js-loading::after {
+        content: "Loading ChatFlow...";
+        position: fixed;
+        top: 60%;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 1.2rem;
+        z-index: 10000;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      }
+
+      /* Local Font Awesome icons (critical only) */
+      @font-face {
+        font-family: "FontAwesome";
+        font-style: normal;
+        font-weight: normal;
+        src: url("data:application/font-woff2;charset=utf-8;base64,d09GMgABAAAAAA=")
+          format("woff2");
+      }
+
+      .fa-robot:before {
+        content: "🤖";
+        font-family: sans-serif;
+      }
+      .fa-cog:before {
+        content: "⚙";
+        font-family: sans-serif;
+      }
+      .fa-history:before {
+        content: "🕓";
+        font-family: sans-serif;
+      }
+      .fa-trash:before {
+        content: "🗑";
+        font-family: sans-serif;
+      }
+      .fa-comments:before {
+        content: "💬";
+        font-family: sans-serif;
+      }
+      .fa-crown:before {
+        content: "👑";
+        font-family: sans-serif;
+      }
+      .fa-paper-plane:before {
+        content: "✈";
+        font-family: sans-serif;
+      }
+      .fa-clock:before {
+        content: "🕐";
+        font-family: sans-serif;
+      }
+    </style>
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Font Awesome with fallback -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      onerror="
+        this.onerror = null;
+        this.href = 'fallback-icons.css';
+      "
+    />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com/ajax/libs" />
+
+    <!-- Progressive Web App meta -->
+    <meta name="theme-color" content="#2E7D32" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body class="js-loading" aria-busy="true">
+    <!-- Theme Toggle Button -->
+    <button
+      id="theme-toggle"
+      class="control-btn theme-toggle-btn"
+      aria-label="Toggle dark/light theme"
+      title="Toggle theme (Alt+T)"
+    >
+      <span class="theme-icon" aria-hidden="true">🌓</span>
+      <span class="sr-only">Toggle theme</span>
+    </button>
+
+    <!-- User Profile Button -->
+    <button
+      id="user-profile-btn"
+      class="user-profile-btn"
+      aria-label="User profile and settings"
+      aria-haspopup="true"
+      aria-expanded="false"
+    >
+      <div class="avatar-container" aria-hidden="true">
+        <div id="user-avatar" class="user-avatar">
+          <span id="avatar-initials" class="avatar-initials">U</span>
+        </div>
+      </div>
+      <div class="user-info">
+        <span id="user-name" class="user-name" aria-live="polite"
+          >Loading...</span
+        >
+        <span id="user-plan" class="user-plan" aria-live="polite"
+          >Free Plan</span
+        >
+      </div>
+      <span class="dropdown-arrow" aria-hidden="true">⌄</span>
+    </button>
+
+    <!-- User Profile Dropdown (Hidden by default) -->
+    <div
+      id="user-dropdown"
+      class="user-dropdown hidden"
+      role="menu"
+      aria-label="User menu"
+    >
+      <div class="dropdown-header">
+        <div class="dropdown-avatar">
+          <div id="dropdown-avatar" class="user-avatar">
+            <span id="dropdown-initials" class="avatar-initials">U</span>
+          </div>
+        </div>
+        <div class="dropdown-user-info">
+          <strong id="dropdown-name" class="dropdown-name">User</strong>
+          <span id="dropdown-email" class="dropdown-email"
+            >user@example.com</span
+          >
+        </div>
+      </div>
+      <div class="dropdown-divider"></div>
+      <button class="dropdown-item" data-action="profile" role="menuitem">
+        <span class="dropdown-icon" aria-hidden="true">👤</span>
+        <span>Profile Settings</span>
+      </button>
+      <button class="dropdown-item" data-action="upgrade" role="menuitem">
+        <span class="dropdown-icon" aria-hidden="true">👑</span>
+        <span>Upgrade Plan</span>
+        <span id="dropdown-plan-badge" class="plan-badge free">Free</span>
+      </button>
+      <button class="dropdown-item" data-action="devices" role="menuitem">
+        <span class="dropdown-icon" aria-hidden="true">📱</span>
+        <span>My Devices</span>
+      </button>
+      <div class="dropdown-divider"></div>
+      <button
+        class="dropdown-item logout-btn"
+        data-action="logout"
+        role="menuitem"
+      >
+        <span class="dropdown-icon" aria-hidden="true">🚪</span>
+        <span>Log Out</span>
+      </button>
+    </div>
+
+    <!-- Main Chat Container -->
+    <main id="chatbot-container" role="main" aria-label="Chat interface">
+      <!-- Chatbot Header -->
+      <header id="chatbot-header" role="banner">
+        <div id="chatbot-title">
+          <span class="logo-icon" aria-hidden="true">🤖</span>
+          <h1 class="sr-only">ChatFlow Assistant</h1>
+          <span class="app-name">ChatFlow Assistant</span>
+          <span
+            id="plan-badge"
+            class="plan-badge free"
+            aria-label="Current plan: Free"
+            >Free</span
+          >
+        </div>
+        <div id="chatbot-controls">
+          <button
+            id="history-toggle"
+            class="control-btn"
+            aria-label="Toggle chat history sidebar"
+            aria-controls="chat-history-sidebar"
+            aria-expanded="true"
+          >
+            <span class="control-icon" aria-hidden="true">🕓</span>
+            <span class="sr-only">Toggle History</span>
+          </button>
+          <button
+            id="new-chat-btn"
+            class="control-btn"
+            aria-label="Start new chat"
+          >
+            <span class="control-icon" aria-hidden="true">🆕</span>
+            <span class="sr-only">New Chat</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Chat Area -->
+      <div id="chatbot-main" role="application">
+        <!-- Chat History Sidebar -->
+        <aside
+          id="chat-history-sidebar"
+          class="active"
+          role="complementary"
+          aria-label="Chat history"
+          aria-describedby="history-header"
+        >
+          <div id="history-header">
+            <h2>
+              <span class="sidebar-icon" aria-hidden="true">🕓</span> Chat
+              History
+            </h2>
+            <div class="history-actions">
+              <button
+                id="clear-history"
+                class="icon-btn"
+                aria-label="Clear all chat history"
+                title="Clear all"
+              >
+                <span class="btn-icon" aria-hidden="true">🗑</span>
+                <span class="sr-only">Clear History</span>
+              </button>
+            </div>
+          </div>
+          <div
+            id="history-list"
+            role="list"
+            aria-label="List of previous chats"
+          >
+            <!-- History items loaded by JavaScript -->
+            <div class="history-empty" role="listitem" aria-live="polite">
+              <span class="empty-icon" aria-hidden="true">💬</span>
+              <p>No chat history yet</p>
+              <p class="empty-subtext">Your conversations will appear here</p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Chat Content Area -->
+        <div id="chatbot-content" role="region" aria-label="Chat conversation">
+          <!-- Welcome Message -->
+          <section
+            id="welcome-message"
+            class="welcome-section"
+            role="region"
+            aria-label="Welcome section"
+          >
+            <h2>Welcome to ChatFlow, <span id="welcome-name">User</span>!</h2>
+            <p class="welcome-description">
+              I'm your professional AI assistant. How can I help you today?
+            </p>
+            <div
+              class="quick-questions"
+              role="group"
+              aria-label="Quick question suggestions"
+            >
+              <button
+                class="quick-question"
+                data-question="What can you do?"
+                aria-label="Ask: What can you do?"
+              >
+                What can you do?
+              </button>
+              <button
+                class="quick-question"
+                data-question="How do I upgrade my plan?"
+                aria-label="Ask about upgrading plan"
+              >
+                Upgrade plan
+              </button>
+              <button
+                class="quick-question"
+                data-question="Tell me about data privacy"
+                aria-label="Ask about data privacy"
+              >
+                Data privacy
+              </button>
+            </div>
+          </section>
+
+          <!-- Chat Messages -->
+          <div
+            id="chatbot-body"
+            role="log"
+            aria-live="polite"
+            aria-atomic="false"
+          >
+            <div id="chatbot-messages" role="list">
+              <!-- Messages loaded by JavaScript -->
+            </div>
+            <div
+              id="typing-indicator"
+              class="typing-indicator hidden"
+              aria-live="polite"
+              aria-label="AI is typing"
+            >
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+            </div>
+          </div>
+
+          <!-- Input Area -->
+          <div id="chatbot-input-container" role="form" aria-label="Chat input">
+            <div class="input-wrapper">
+              <label for="chatbot-input" class="sr-only"
+                >Type your message</label
+              >
+              <input
+                type="text"
+                id="chatbot-input"
+                placeholder="Ask me anything..."
+                autocomplete="off"
+                aria-label="Type your message"
+                aria-describedby="input-hints"
+                maxlength="2000"
+                enterkeyhint="send"
+              />
+              <button
+                id="send-btn"
+                class="send-btn"
+                aria-label="Send message"
+                disabled
+              >
+                <span class="send-icon" aria-hidden="true">✈</span>
+                <span class="sr-only">Send</span>
+              </button>
+            </div>
+            <div id="input-hints" class="input-hints" aria-live="polite">
+              <small
+                >Press <kbd>Enter</kbd> to send • <kbd>Shift</kbd>+<kbd
+                  >Enter</kbd
+                >
+                for new line</small
+              >
+              <small class="char-count"
+                ><span id="char-count">0</span>/2000</small
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div
+      id="settings-modal"
+      class="settings-modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-title"
+      aria-describedby="settings-description"
+    >
+      <div class="settings-content">
+        <div class="settings-header">
+          <h2 id="settings-title">
+            <span class="modal-icon" aria-hidden="true">⚙</span> Settings
+          </h2>
+          <button
+            id="close-settings"
+            class="close-settings"
+            aria-label="Close settings"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="settings-body" id="settings-description">
+          <!-- Settings content populated by JavaScript -->
+          <div class="settings-loading" aria-live="polite">
+            <p>Loading settings...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment/Upgrade Modal -->
+    <div
+      id="payment-modal"
+      class="settings-modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="payment-title"
+      aria-describedby="payment-description"
+    >
+      <div class="settings-content">
+        <div class="settings-header">
+          <h2 id="payment-title">
+            <span class="modal-icon" aria-hidden="true">👑</span> Upgrade Your
+            Plan
+          </h2>
+          <button
+            id="close-payment"
+            class="close-settings"
+            aria-label="Close upgrade modal"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="settings-body" id="payment-description">
+          <!-- Payment options populated by JavaScript -->
+          <div class="payment-loading" aria-live="polite">
+            <p>Loading plan options...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Toast Container -->
+    <div
+      id="toast-container"
+      class="toast-container"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    ></div>
+
+    <!-- No Script Fallback -->
+    <noscript>
+      <div class="noscript-warning" role="alert">
+        <h2>JavaScript Required</h2>
+        <p>
+          ChatFlow requires JavaScript to function. Please enable JavaScript in
+          your browser settings.
+        </p>
+        <p>If you need assistance, please contact support.</p>
+      </div>
+      <style>
+        #chatbot-container,
+        #user-profile-btn,
+        #theme-toggle {
+          display: none !important;
+        }
+        .noscript-warning {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: #f5f5f7;
+          color: #1d1d1f;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 2rem;
+          z-index: 99999;
+          font-family:
+            -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        }
+        .noscript-warning h2 {
+          color: #2e7d32;
+          margin-bottom: 1rem;
+        }
+        .noscript-warning p {
+          max-width: 600px;
+          margin: 0.5rem auto;
+          line-height: 1.6;
+        }
+      </style>
+    </noscript>
+
+    <!-- Load scripts with proper error handling -->
+    <script>
+      // Create device ID if not exists (for multi-device tracking)
+      function getDeviceId() {
+        let deviceId = localStorage.getItem("chatflow_device_id");
+        if (!deviceId) {
+          deviceId =
+            "device_" +
+            Date.now() +
+            "_" +
+            Math.random().toString(36).substr(2, 9);
+          localStorage.setItem("chatflow_device_id", deviceId);
+        }
+        return deviceId;
+      }
+
+      // Set device ID for API requests
+      window.deviceId = getDeviceId();
+
+      // Error tracking
+      window.onerror = function (msg, url, lineNo, columnNo, error) {
+        console.error("Global error:", { msg, url, lineNo, columnNo, error });
+        // Could send to error tracking service here
+        return false;
+      };
+
+      // Remove loading state when page is ready
+      document.addEventListener("DOMContentLoaded", function () {
+        // Remove loading class after a short delay to ensure styles are loaded
+        setTimeout(() => {
+          document.body.classList.remove("js-loading");
+          document.body.setAttribute("aria-busy", "false");
+        }, 100);
+
+        // Check authentication and redirect if needed
+        setTimeout(() => {
+          const user = window.authManager?.getUser();
+          if (!user) {
+            console.warn("No user found, redirecting to login");
+            window.location.href =
+              "index.html?redirect=" +
+              encodeURIComponent(window.location.pathname);
+          }
+        }, 500);
+      });
+
+      // Handle page visibility changes (for background behavior)
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          // Page is hidden, could pause expensive operations
+        } else {
+          // Page is visible again
+        }
+      });
+
+      // Handle offline/online status
+      window.addEventListener("online", function () {
+        showToast("You are back online", "success");
+      });
+
+      window.addEventListener("offline", function () {
+        showToast("You are offline. Some features may not work.", "warning");
+      });
+
+      // Toast function
+      function showToast(message, type = "info") {
+        const toast = document.createElement("div");
+        toast.className = `toast toast-${type}`;
+        toast.setAttribute("role", "alert");
+        toast.textContent = message;
+
+        const container = document.getElementById("toast-container");
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.add("show");
+        }, 10);
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+          setTimeout(() => {
+            if (toast.parentNode === container) {
+              container.removeChild(toast);
+            }
+          }, 300);
+        }, 5000);
+      }
+
+      // Expose to global scope
+      window.showToast = showToast;
+    </script>
+
+    <!-- Load main scripts with error handling -->
+    <script
+      src="auth.js"
+      onerror="showToast('Failed to load authentication module', 'error')"
+    ></script>
+    <script
+      src="script.js"
+      onerror="showToast('Failed to load chat module', 'error')"
+    ></script>
+
+    <!-- Initialize after scripts load -->
+    <script>
+      // Wait for all scripts to load
+      window.addEventListener("load", function () {
+        // Initialize chat if script loaded successfully
+        if (window.chatManager) {
+          try {
+            window.chatManager.init();
+          } catch (error) {
+            console.error("Chat initialization failed:", error);
+            showToast("Failed to initialize chat. Please refresh.", "error");
+          }
+        }
+
+        // Update user info if auth loaded
+        if (window.authManager) {
+          const user = window.authManager.getUser();
+          if (user) {
+            updateUserUI(user);
+          }
+        }
+
+        // Set up service worker for PWA
+        if (
+          "serviceWorker" in navigator &&
+          window.location.protocol === "https:"
+        ) {
+          navigator.serviceWorker.register("sw.js").catch((err) => {
+            console.log("ServiceWorker registration failed: ", err);
+          });
+        }
+      });
+
+      function updateUserUI(user) {
+        // Update user name
+        const userName = user.name || user.email?.split("@")[0] || "User";
+        document.getElementById("user-name").textContent = userName;
+        document.getElementById("welcome-name").textContent = userName;
+        document.getElementById("dropdown-name").textContent = userName;
+
+        // Update email
+        if (user.email) {
+          document.getElementById("dropdown-email").textContent = user.email;
+        }
+
+        // Update avatar initials
+        const initials = userName
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .substring(0, 2);
+        document.getElementById("avatar-initials").textContent = initials;
+        document.getElementById("dropdown-initials").textContent = initials;
+
+        // Update plan
+        const plan = user.plan || "free";
+        const planText = plan.charAt(0).toUpperCase() + plan.slice(1);
+        document.getElementById("user-plan").textContent = planText + " Plan";
+        document.getElementById("plan-badge").textContent = planText;
+        document.getElementById("plan-badge").className = "plan-badge " + plan;
+        document.getElementById("dropdown-plan-badge").textContent = planText;
+        document.getElementById("dropdown-plan-badge").className =
+          "plan-badge " + plan;
+
+        // Update avatar image if available (with fallback)
+        if (user.photoURL) {
+          const avatarImg = new Image();
+          avatarImg.src = user.photoURL;
+          avatarImg.onload = function () {
+            document.getElementById("user-avatar").style.backgroundImage =
+              `url(${user.photoURL})`;
+            document.getElementById("dropdown-avatar").style.backgroundImage =
+              `url(${user.photoURL})`;
+            document.getElementById("avatar-initials").style.display = "none";
+            document.getElementById("dropdown-initials").style.display = "none";
+          };
+          avatarImg.onerror = function () {
+            // Keep initials if image fails to load
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

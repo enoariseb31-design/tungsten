@@ -1,0 +1,12 @@
+[build]
+  publish = "."
+  command = "echo 'No build step required'"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  # Backend URL will be set in Netlify dashboard
+  BACKEND_URL = "https://your-backend-url.herokuapp.com"
